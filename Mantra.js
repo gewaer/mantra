@@ -2,19 +2,54 @@ import { MantraPlugin } from './lib/MantraPlugin';
 import { error } from './lib/utils';
 
 /*
+    This functions are meant to be used as utilities for the params validation
+*/
+const isFalsy = (value) => (!value);
+const isObject = (value) => (value.constructor.name === 'Object');
+const isObjectEmpty = (obj) => (Object.keys(obj).length === 0);
+
+/*
+    This function is meant to check if the schemas object is invalid
+
+    @param {object} schemas - Contains the mantra schemas object
+    @return {boolean} True if the schemas is invalid
+*/
+const isSchemasInvalid = function(schemas) {
+    const NOT_DEFINED = isFalsy(schemas);
+    const IS_NOT_OBJECT = !isObject(schemas);
+
+    return NOT_DEFINED || IS_NOT_OBJECT;
+};
+
+/*
+    This function is meant to check if the store object is invalid
+
+    @param {object} store - Contains the store library and configuration
+    @return {boolean} True if the store is invalid
+*/
+const isStoreInvalid = function(store) {
+    const NOT_DEFINED = isFalsy(store);
+    const IS_NOT_OBJECT = !isObject(store);
+    const IS_OBJECT_EMPTY = isObjectEmpty(store.lib);
+
+    return NOT_DEFINED || IS_NOT_OBJECT || IS_OBJECT_EMPTY;
+};
+
+/*
     This function is meant to validate the install options parameter
 
     @param {object} params - Contains the vue install configuration
     @return {boolean}
 */
 const isOptionsValid = function(params) {
-    const { config: { schemas = null }, plugins: { store = null } } = params;
-    
-    // 1. Check if schemas exist
-    if (!schemas || schemas.constructor.name !== 'Object') return { valid: false, reason: 'Schemas property must be an object' };
+    const { 
+        config: { schemas = null }, 
+        plugins: { store = null } 
+    } = params;
 
-    // 2. Check if the store lib exist
-    if (!store || store.constructor.name !== 'Object' || Object.keys(store.lib).length === 0) return { valid: false, reason: 'Store library must be provided' };
+    if (isSchemasInvalid(schemas)) return { valid: false, reason: 'Schemas property must be an object' };
+
+    if (isStoreInvalid(store)) return { valid: false, reason: 'Store library must be provided' };
 
     return { valid: true };
 };
@@ -43,13 +78,13 @@ const componentsRegistration = function(Vue, components) {
     @return {object} store - Returns the modified store plugin
 */
 const registerStoreModule = function(store, options) {
-    const { lib, config } = store;
+    const { lib } = store;
     const { schemas } = options;
     
     // Registering schema module
     lib.registerModule('schemas', {
         state: {
-            schemas,
+            ...schemas
         },
         getters: {},
         mutations: {},
