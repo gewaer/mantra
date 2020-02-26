@@ -2,19 +2,35 @@ import { MantraPlugin } from './lib/MantraPlugin';
 import { error } from './lib/utils';
 
 /*
+    This functions are meant to be used as utilities for the params validation
+*/
+const isFalsy = (value) => (!value);
+const isObject = (value) => (value.constructor.name === 'Object');
+const isEmpty = (obj) => (Object.keys(obj).length === 0);
+
+/*
     This function is meant to validate the install options parameter
 
     @param {object} params - Contains the vue install configuration
     @return {boolean}
 */
 const isOptionsValid = function(params) {
-    const { config: { schemas = null }, plugins: { store = null } } = params;
-    
+    const { 
+        config: { schemas = null }, 
+        plugins: { store = null } 
+    } = params;
+
+    const SCHEMAS_NOT_DEFINED = isFalsy(schemas);
+    const SCHEMAS_IS_NOT_OBJECT = !isObject(schemas);
+    const STORE_NOT_DEFINED = isFalsy(store);
+    const STORE_IS_NOT_OBJECT = !isObject(store);
+    const STORE_IS_EMPTY = isEmpty(store.lib);
+
     // 1. Check if schemas exist
-    if (!schemas || schemas.constructor.name !== 'Object') return { valid: false, reason: 'Schemas property must be an object' };
+    if (SCHEMAS_NOT_DEFINED || SCHEMAS_IS_NOT_OBJECT) return { valid: false, reason: 'Schemas property must be an object' };
 
     // 2. Check if the store lib exist
-    if (!store || store.constructor.name !== 'Object' || Object.keys(store.lib).length === 0) return { valid: false, reason: 'Store library must be provided' };
+    if (STORE_NOT_DEFINED || STORE_IS_NOT_OBJECT || STORE_IS_EMPTY) return { valid: false, reason: 'Store library must be provided' };
 
     return { valid: true };
 };
@@ -43,13 +59,13 @@ const componentsRegistration = function(Vue, components) {
     @return {object} store - Returns the modified store plugin
 */
 const registerStoreModule = function(store, options) {
-    const { lib, config } = store;
+    const { lib } = store;
     const { schemas } = options;
     
     // Registering schema module
     lib.registerModule('schemas', {
         state: {
-            schemas,
+            ...schemas
         },
         getters: {},
         mutations: {},
