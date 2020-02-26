@@ -6,7 +6,34 @@ import { error } from './lib/utils';
 */
 const isFalsy = (value) => (!value);
 const isObject = (value) => (value.constructor.name === 'Object');
-const isEmpty = (obj) => (Object.keys(obj).length === 0);
+const isObjectEmpty = (obj) => (Object.keys(obj).length === 0);
+
+/*
+    This function is meant to check if the schemas object is invalid
+
+    @param {object} schemas - Contains the mantra schemas object
+    @return {boolean} True if the schemas is invalid
+*/
+const isSchemasInvalid = function(schemas) {
+    const NOT_DEFINED = isFalsy(schemas);
+    const IS_NOT_OBJECT = !isObject(schemas);
+
+    return NOT_DEFINED || IS_NOT_OBJECT;
+};
+
+/*
+    This function is meant to check if the store object is invalid
+
+    @param {object} store - Contains the store library and configuration
+    @return {boolean} True if the store is invalid
+*/
+const isStoreInvalid = function(store) {
+    const NOT_DEFINED = isFalsy(store);
+    const IS_NOT_OBJECT = !isObject(store);
+    const IS_OBJECT_EMPTY = isObjectEmpty(store.lib);
+
+    return NOT_DEFINED || IS_NOT_OBJECT || IS_OBJECT_EMPTY;
+};
 
 /*
     This function is meant to validate the install options parameter
@@ -20,17 +47,9 @@ const isOptionsValid = function(params) {
         plugins: { store = null } 
     } = params;
 
-    const SCHEMAS_NOT_DEFINED = isFalsy(schemas);
-    const SCHEMAS_IS_NOT_OBJECT = !isObject(schemas);
-    const STORE_NOT_DEFINED = isFalsy(store);
-    const STORE_IS_NOT_OBJECT = !isObject(store);
-    const STORE_IS_EMPTY = isEmpty(store.lib);
+    if (isSchemasInvalid(schemas)) return { valid: false, reason: 'Schemas property must be an object' };
 
-    // 1. Check if schemas exist
-    if (SCHEMAS_NOT_DEFINED || SCHEMAS_IS_NOT_OBJECT) return { valid: false, reason: 'Schemas property must be an object' };
-
-    // 2. Check if the store lib exist
-    if (STORE_NOT_DEFINED || STORE_IS_NOT_OBJECT || STORE_IS_EMPTY) return { valid: false, reason: 'Store library must be provided' };
+    if (isStoreInvalid(store)) return { valid: false, reason: 'Store library must be provided' };
 
     return { valid: true };
 };
