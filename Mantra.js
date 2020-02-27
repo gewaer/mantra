@@ -18,7 +18,7 @@ const isValidSchema = function(schemas) {
     const IS_DEFINED = isTruly(schemas);
     const IS_OBJECT = isObject(schemas);
 
-    return !IS_DEFINED || !IS_OBJECT;
+    return IS_DEFINED || IS_OBJECT;
 };
 
 /*
