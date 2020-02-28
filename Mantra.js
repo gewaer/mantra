@@ -4,35 +4,35 @@ import { error } from './lib/utils';
 /*
     This functions are meant to be used as utilities for the params validation
 */
-const isFalsy = (value) => (!value);
+const isTruly = (value) => (!!value);
 const isObject = (value) => (value.constructor.name === 'Object');
-const isObjectEmpty = (obj) => (Object.keys(obj).length === 0);
+const isEmptyObject = (obj) => (Object.keys(obj).length === 0);
 
 /*
-    This function is meant to check if the schemas object is invalid
+    This function is meant to check if the schemas object is valid
 
     @param {object} schemas - Contains the mantra schemas object
-    @return {boolean} True if the schemas is invalid
+    @return {boolean} True if the schemas is valid
 */
-const isSchemasInvalid = function(schemas) {
-    const NOT_DEFINED = isFalsy(schemas);
-    const IS_NOT_OBJECT = !isObject(schemas);
+const isValidSchema = function(schemas) {
+    const IS_DEFINED = isTruly(schemas);
+    const IS_OBJECT = isObject(schemas);
 
-    return NOT_DEFINED || IS_NOT_OBJECT;
+    return IS_DEFINED || IS_OBJECT;
 };
 
 /*
-    This function is meant to check if the store object is invalid
+    This function is meant to check if the store object is valid
 
     @param {object} store - Contains the store library and configuration
-    @return {boolean} True if the store is invalid
+    @return {boolean} True if the store is valid
 */
-const isStoreInvalid = function(store) {
-    const NOT_DEFINED = isFalsy(store);
-    const IS_NOT_OBJECT = !isObject(store);
-    const IS_OBJECT_EMPTY = isObjectEmpty(store.lib);
+const isValidStore = function(store) {
+    const IS_DEFINED = isTruly(store);
+    const IS_OBJECT = isObject(store);
+    const IS_EMPTY_OBJECT = isEmptyObject(store.lib);
 
-    return NOT_DEFINED || IS_NOT_OBJECT || IS_OBJECT_EMPTY;
+    return IS_DEFINED || IS_OBJECT || !IS_EMPTY_OBJECT;
 };
 
 /*
@@ -42,14 +42,14 @@ const isStoreInvalid = function(store) {
     @return {boolean}
 */
 const isOptionsValid = function(params) {
-    const { 
-        config: { schemas = null }, 
-        plugins: { store = null } 
+    const {
+        config: { schemas = null },
+        plugins: { store = null }
     } = params;
 
-    if (isSchemasInvalid(schemas)) return { valid: false, reason: 'Schemas property must be an object' };
+    if (!isValidSchema(schemas)) return { valid: false, reason: 'Schemas property must be an object' };
 
-    if (isStoreInvalid(store)) return { valid: false, reason: 'Store library must be provided' };
+    if (!isValidStore(store)) return { valid: false, reason: 'Store library must be provided' };
 
     return { valid: true };
 };
@@ -80,7 +80,7 @@ const componentsRegistration = function(Vue, components) {
 const registerStoreModule = function(store, options) {
     const { lib } = store;
     const { schemas } = options;
-    
+
     // Registering schema module
     lib.registerModule('schemas', {
         state: {
@@ -105,7 +105,7 @@ const install = function(Vue, options) {
     const { valid, reason } = isOptionsValid(options);
     if(!valid) return error(reason);
 
-    const { 
+    const {
         config: { schemas, components },
         plugins: { store }
     } = options;
