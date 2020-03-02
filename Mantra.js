@@ -2,7 +2,7 @@ import { MantraPlugin } from './lib/MantraPlugin';
 import { error } from './lib/utils';
 
 /*
-    This functions are meant to be used as utilities for the params validation
+    These functions are meant to be used as utilities for the params validation
 */
 const isTruly = (value) => (!!value);
 const isObject = (value) => (value.constructor.name === 'Object');
