@@ -18,7 +18,7 @@ const isValidSchema = function(schemas) {
     const IS_DEFINED = isTruly(schemas);
     const IS_OBJECT = isObject(schemas);
 
-    return IS_DEFINED || IS_OBJECT;
+    return IS_DEFINED && IS_OBJECT;
 };
 
 /*
@@ -32,7 +32,7 @@ const isValidStore = function(store) {
     const IS_OBJECT = isObject(store);
     const IS_EMPTY_OBJECT = isEmptyObject(store.lib);
 
-    return IS_DEFINED || IS_OBJECT || !IS_EMPTY_OBJECT;
+    return IS_DEFINED && IS_OBJECT && !IS_EMPTY_OBJECT;
 };
 
 /*
