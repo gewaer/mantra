@@ -17,10 +17,19 @@ export default {
     beforeRouteEnter(to, from, next) {
         const path = convertRouteToPath(to);
         const config = MantraForm._getConfig({ path });
-        next();
+        
+        const IS_VALID_COMPONENT = config.component._isValidComponent(this);
+        const IS_PATH_EMPTY = (config.path === '');
+        
+        if (IS_VALID_COMPONENT && IS_PATH_EMPTY) {
+            next();
+        } else {
+            next('*');
+        }
     },
     render(createElement, context) {
         // Component is render using CreateElement
+        createElement('GeneralVehicle', context);
     }
 };
 </script>
