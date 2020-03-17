@@ -1,10 +1,4 @@
 <script>
-/*
-    MISSING IMPLEMENTATIONS:
-    1. Route utility
-    2. MantraForm class (static method "getConfig" usage)
-    3. Render a component using MantraForm configuration
-*/
 import MantraForm from './../core/components/MantraForm';
 
 const convertRouteToPath = function (route) {
@@ -35,8 +29,11 @@ export default {
     },
     render(createElement, context) {
         const { props: { config }, parent, children, data } = context;
-        if (!config.component._isValidComponent(parent)) return createElement('404', context.data, children);
-        else return createElement(config.component.name, { ...context.data, props: { config } }, children);
+
+        if (!config.component._isValidComponent(parent)) 
+            return createElement('404', context.data, children);
+        else
+            return createElement(config.component.name, { ...context.data, props: { config } }, children);
     }
 };
 </script>
