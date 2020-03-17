@@ -28,19 +28,15 @@ export default {
         
         if (IS_PATH_EMPTY) {
             pushToRouteParams(to, { config });
-            console.log("[beforeRouteEnter] ROUTE OBJECT", to);
             next();
         } else {
             next('*');
         }
     },
     render(createElement, context) {
-        console.log("[render] CONTEXT", context);
-        const { props: { config }, parent } = context;
-        const IS_VALID_COMPONENT = config.component._isValidComponent(parent);
-        console.log("IS VALID COMPONENT", IS_VALID_COMPONENT);
-        // Component is render using CreateElement
-        createElement('GeneralVehicle', context);
+        const { props: { config }, parent, children, data } = context;
+        if (!config.component._isValidComponent(parent)) return createElement('404', context.data, children);
+        else return createElement(config.component.name, { ...context.data, props: { config } }, children);
     }
 };
 </script>
