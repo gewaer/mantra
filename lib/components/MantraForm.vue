@@ -1,7 +1,7 @@
 <script>
 import MantraForm from './../core/components/MantraForm';
 
-const convertRouteToPath = function (route) {
+const getPathFromObject = function (route) {
     const { params } = route;
     const path = Object.values(params).join('.');
     return path;
