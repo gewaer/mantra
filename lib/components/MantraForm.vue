@@ -21,6 +21,7 @@ export default {
 
         try {
             const config = MantraForm._getConfig({ path });
+            console.log("CONFIG", config);
             pushToRouteParams(to, { config });
             next();
         } catch(err) {
@@ -31,10 +32,11 @@ export default {
     render(createElement, context) {
         const { props: { config }, parent, children, data } = context;
 
-        if (!config.component._isValidComponent(parent)) 
+        if (!config.component._isValidComponent(parent)) {
             return createElement('404', context.data, children);
-        else
-            return createElement(config.component.name, { ...context.data, props: { config } }, children);
+        }
+        
+        return createElement(config.component.name, { ...context.data, props: { config } }, children);
     }
 };
 </script>

@@ -47,9 +47,13 @@ const isOptionsValid = function(params) {
         plugins: { store = null }
     } = params;
 
-    if (!isValidSchema(schemas)) return { valid: false, reason: 'Schemas property must be an object' };
+    if (!isValidSchema(schemas)) {
+        return { valid: false, reason: 'Schemas property must be an object' };
+    }
 
-    if (!isValidStore(store)) return { valid: false, reason: 'Store library must be provided' };
+    if (!isValidStore(store)) {
+        return { valid: false, reason: 'Store library must be provided' };
+    }
 
     return { valid: true };
 };
