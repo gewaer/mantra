@@ -21,7 +21,6 @@ export default {
 
         try {
             const config = MantraForm._getConfig({ path });
-            console.log("CONFIG", config);
             pushToRouteParams(to, { config });
             next();
         } catch(err) {
