@@ -1,5 +1,6 @@
 <script>
 import MantraForm from './../core/components/MantraForm';
+import { error } from '../utils';
 
 const getPathFromObject = function (route) {
     const { params } = route;
@@ -16,14 +17,14 @@ const pushToRouteParams = function (route, payload) {
 export default {
     functional: true,
     beforeRouteEnter(to, from, next) {
-        const path = convertRouteToPath(to);
-        const config = MantraForm._getConfig({ path });
-        const IS_PATH_EMPTY = (config._path === '');
-        
-        if (IS_PATH_EMPTY) {
+        const path = getPathFromObject(to);
+
+        try {
+            const config = MantraForm._getConfig({ path });
             pushToRouteParams(to, { config });
             next();
-        } else {
+        } catch(err) {
+            error(err.message);
             next('*');
         }
     },
