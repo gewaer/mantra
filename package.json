@@ -11,7 +11,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": ""
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --watch"
   },
   "files": [
     "lib/**",
@@ -27,13 +29,17 @@
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
+    "babel-jest": "^23.6.0",
+    "babel-loader": "^7.1.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
+    "jest": "^23.6.0",
+    "jest-watch-typeahead": "^0.4.2",
     "vue": "^2.6.11"
   },
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "lodash": "^4.17.15"
   }
 }
