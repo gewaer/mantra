@@ -1,0 +1,16 @@
+{
+  "presets": [
+    ["env", { "modules": false }],
+  ],
+  "plugins": [
+    "transform-runtime",
+    "transform-object-rest-spread"
+  ],
+  "env": {
+    "test": {
+      "presets": [
+        ["env", { "modules": "commonjs" }]
+      ]
+    }
+  }
+}
