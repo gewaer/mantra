@@ -6,6 +6,6 @@ module.exports = {
 	testEnvironment: 'jest-environment-node',
 	moduleDirectories: ['node_modules'],
 	testMatch: ['**/test/**/*.js'],
-	collectCoverageFrom: ['**/src/**/*.js'],
+	collectCoverageFrom: ['**/lib/**/*.js'],
 	watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname']
 };
