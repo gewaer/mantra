@@ -4,21 +4,19 @@ import { error } from './lib/utils';
 /*
     These functions are meant to be used as utilities for the params validation
 */
-const isTruly = (value) => (!!value);
-const isObject = (value) => (value.constructor.name === 'Object');
-const isEmptyObject = (obj) => (Object.keys(obj).length === 0);
+export const isTruthy = (value) => (!!value);
+export const isObject = (value) => (value.constructor.name === 'Object');
+export const isEmptyObject = (obj) => (Object.keys(obj).length === 0);
 
 /**
- * This function is meant to check if the schemas object is valid.
+ * This function is meant to check if the schemas parameter is an object value.
  *
- * @param {object} schemas - Contains the mantra schemas object.
- * @return {boolean} - True if the schemas is valid.
+ * @param {object} schemas - Contains the schemas configuration.
+ * @return {boolean} True if the schemas parameter is an object value.
  */
-const isValidSchema = function(schemas) {
-    const IS_DEFINED = isTruly(schemas);
-    const IS_OBJECT = isObject(schemas);
-
-    return IS_DEFINED && IS_OBJECT;
+export const isValidSchema = function(schemas) {
+    const IS_DEFINED = isTruthy(schemas);
+    return IS_DEFINED && isObject(schemas);
 };
 
 /**
@@ -27,21 +25,18 @@ const isValidSchema = function(schemas) {
  * @param {object} store - Contains the store library and configuration.
  * @returns {boolean} - True if the store is valid.
  */
-const isValidStore = function(store) {
-    const IS_DEFINED = isTruly(store);
-    const IS_OBJECT = isObject(store);
-    const IS_EMPTY_OBJECT = isEmptyObject(store.lib);
-
-    return IS_DEFINED && IS_OBJECT && !IS_EMPTY_OBJECT;
+export const isValidStore = function(store) {
+    const IS_DEFINED = isTruthy(store);
+    return IS_DEFINED && isObject(store) && !isEmptyObject(store) && !isEmptyObject(store.lib);
 };
 
 /**
  * This function is meant to validate the install options parameter.
  *
  * @param {object} params - Contains the vue install configuration.
- * @returns {boolean}
+ * @returns {object} Contains a boolean `valid` prop thats true if options is valid and a `reason` prop in case its not valid
  */
-const isOptionsValid = function(params) {
+export const isOptionsValid = function(params) {
     const {
         config: { schemas = null },
         plugins: { store = null }
@@ -64,7 +59,7 @@ const isOptionsValid = function(params) {
  * @param {Vue} Vue - Contains the Vue Instance.
  * @param {object} components - Contains an object of vue components.
  */
-const componentsRegistration = function(Vue, components) {
+export const componentsRegistration = function(Vue, components) {
     const componentNames = Object.keys(components);
 
     for (let name of componentNames) {
@@ -81,7 +76,7 @@ const componentsRegistration = function(Vue, components) {
  * @param {object} options - Contains data that's used by the store modules.
  * @returns {object} - Returns the modified store plugin.
  */
-const registerStoreModule = function(store, options) {
+export const registerStoreModule = function(store, options) {
     const { lib } = store;
     const { schemas } = options;
 
@@ -104,7 +99,7 @@ const registerStoreModule = function(store, options) {
  * @param {Vue} Vue - Contains the Vue Instance.
  * @param {object} options - Contains configuration for Mantra installation
  */
-const install = function(Vue, options) {
+export const install = function(Vue, options) {
     const { valid, reason } = isOptionsValid(options);
     if(!valid) return error(reason);
 
