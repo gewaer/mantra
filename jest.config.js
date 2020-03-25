@@ -5,7 +5,7 @@ module.exports = {
 	displayName: 'client',
 	testEnvironment: 'jest-environment-node',
 	moduleDirectories: ['node_modules'],
-	testMatch: ['**/test/**/*.js'],
+	testMatch: ['**/test/unit/**/*.js'],
 	collectCoverageFrom: ['**/lib/**/*.js'],
 	watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname']
 };

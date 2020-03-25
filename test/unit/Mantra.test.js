@@ -1,4 +1,4 @@
-import Mantra from '../Mantra';
+import Mantra from '../../Mantra';
 
 describe('Mantra installation (Vue)', () => {
 	it('returns a function', () => {
