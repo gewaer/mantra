@@ -39,6 +39,7 @@
     "vue": "^2.6.11"
   },
   "dependencies": {
+    "@types/jest": "^25.1.4",
     "lodash": "^4.17.15"
   }
 }
