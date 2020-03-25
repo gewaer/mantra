@@ -39,7 +39,6 @@
     "vue": "^2.6.11"
   },
   "dependencies": {
-    "@babel/runtime": "^7.9.2",
     "lodash": "^4.17.15"
   }
 }
