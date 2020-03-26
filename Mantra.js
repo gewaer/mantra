@@ -1,6 +1,8 @@
 import { MantraPlugin } from './lib/MantraPlugin';
 import { error } from './lib/utils';
 
+console.log("dummy change");
+
 /*
     These functions are meant to be used as utilities for the params validation
 */
