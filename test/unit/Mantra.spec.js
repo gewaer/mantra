@@ -1,4 +1,5 @@
-import Mantra, { isTruthy, isObject, isEmptyObject, isValidSchema, isValidStore, isOptionsValid } from '../../Mantra';
+import Mantra, { isTruthy, isObject, isEmptyObject, isValidSchema, isValidStore, isOptionsValid, componentsRegistration } from '../../Mantra';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
 
 describe('Mantra.js module', () => {
 	it('should export a function', () => {
@@ -147,5 +148,60 @@ describe('Mantra.js module', () => {
 			
 			expect(isOptionsValid(invalidStoreOptions)).toMatchObject(expectedResult);
 		});
+	});
+
+	describe('Vue installation', () => {
+		let localVue = null;
+		beforeEach(() => (localVue = createLocalVue()));
+
+		describe('componentsRegistration', () => {
+			it('should be a function', () => {
+				expect(componentsRegistration).toBeInstanceOf(Function);
+			});
+
+			it('should register components in the vue instance', () => {
+				const components = {
+					'test': {
+						template: ''
+					},
+					'dummy': {
+						template: ''
+					}
+				};
+
+				componentsRegistration(localVue, components);
+				
+				const wrapper = shallowMount({
+					template: '<div><test/><dummy/></div>'
+				}, { localVue });
+
+				expect(wrapper.find({ name: 'test' }).exists()).toBe(true);
+				expect(wrapper.find({ name: 'dummy' }).exists()).toBe(true);
+			});
+
+			it('should throw exception when `components` is a falsy value', () => {
+				expect(() => (componentsRegistration(localVue, null))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, undefined))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, false))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, 0))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, ''))).toThrowError('Mantra installation expects Vue components in its config parameter');
+			});
+
+			it('should throw exception when `components` is a non-object value', () => {
+				expect(() => (componentsRegistration(localVue, []))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, new Function()))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, new Map()))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, new Set()))).toThrowError('Mantra installation expects Vue components in its config parameter');
+			});
+		});
+
+		describe('registerStoreModule', () => {
+
+		});
+
+		describe('install', () => {
+
+		});
+
 	});
 });
