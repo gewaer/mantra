@@ -58,10 +58,14 @@ export const isOptionsValid = function(params) {
  *
  * @param {Vue} Vue - Contains the Vue Instance.
  * @param {object} components - Contains an object of vue components.
+ * @returns {Error|void} If the components param is falsy or not object then an exception is thrown
  */
 export const componentsRegistration = function(Vue, components) {
-    const componentNames = Object.keys(components);
+    if (!isTruthy(components) || !isObject(components)) {
+        throw new Error('Mantra installation expects Vue components in its config parameter');
+    }
 
+    const componentNames = Object.keys(components);
     for (let name of componentNames) {
         const component = components[name];
         Vue.component(name, component);
@@ -108,7 +112,11 @@ export const install = function(Vue, options) {
         plugins: { store }
     } = options;
 
-    componentsRegistration(Vue, components);
+    try {
+        componentsRegistration(Vue, components);
+    } catch(er) {
+        error(er.message);
+    }
 
     const StorePlugin = registerStoreModule(store, { schemas });
 
