@@ -1,12 +1,16 @@
 import 'jest-extended';
 import Vuex from 'vuex';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Mantra, { isTruthy, isObject, isEmptyObject, isValidSchema, isValidStore, isOptionsValid, componentsRegistration, registerStoreModule, install } from '../../Mantra';
 import { MantraPlugin } from '../../lib/MantraPlugin';
+import Mantra, { componentsRegistration, install, isEmptyObject, isObject, isOptionsValid, isTruthy, isValidSchema, isValidStore, registerStoreModule } from '../../Mantra';
 
 describe('Mantra.js module', () => {
 	it('should export a function', () => {
 		expect(Mantra).toBeInstanceOf(Function);
+	});
+
+	it('should export a function call `install`', () => {
+		expect(Mantra.name).toEqual('install');
 	});
 
 	describe('isTruthy', () => {
