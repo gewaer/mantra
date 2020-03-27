@@ -1,3 +1,10 @@
+/**
+ * Object with the properties needed to instantiate a MantraModel class.
+ * @typedef {Object} HttpClientConfig
+ * @property {String} name - Name of the key at the vue.prototype to retrieve the HttpClient library.
+ * @property {Function} _get - Temporary method to closure the Vue instance and retrieve from the HttpClient library.
+ */
+
 import { MantraPlugin } from './lib/MantraPlugin';
 import { error } from './lib/utils';
 
@@ -44,7 +51,7 @@ const isValidStore = function(store) {
 const isOptionsValid = function(params) {
     const {
         config: { schemas = null },
-        plugins: { store = null }
+        plugins: { store = null, httpClient = null }
     } = params;
 
     if (!isValidSchema(schemas)) {
@@ -53,6 +60,10 @@ const isOptionsValid = function(params) {
 
     if (!isValidStore(store)) {
         return { valid: false, reason: 'Store library must be provided' };
+    }
+
+    if (!isValidStore(httpClient)) {
+        return { valid: false, reason: 'HttpClient library configuration must be provided' };
     }
 
     return { valid: true };
@@ -99,10 +110,26 @@ const registerStoreModule = function(store, options) {
 };
 
 /**
+ * Temporary handler to set some dynamic approach to handle custom HttpClient library.
+ *
+ * @param {String} lib - Name of the key at the vue.prototype to retrieve the HttpClient library.
+ * @param {Vue} Vue - Vue instance to retrive the HttpClient from its prototype.
+ * @returns {HttpClientConfig} - Return the config to set at the httpClient.
+ */
+const setHttpClient = function(name) {
+    return {
+        name,
+        _get: function() {            
+            return this[`$${name}`];
+        }
+    };
+};
+
+/**
  * This function is meant to install Mantra as a Vue Plugin.
  *
  * @param {Vue} Vue - Contains the Vue Instance.
- * @param {object} options - Contains configuration for Mantra installation
+ * @param {object} options - Contains configuration for Mantra installation.
  */
 const install = function(Vue, options) {
     const { valid, reason } = isOptionsValid(options);
@@ -110,14 +137,15 @@ const install = function(Vue, options) {
 
     const {
         config: { schemas, components },
-        plugins: { store }
+        plugins: { store, httpClient }
     } = options;
 
     componentsRegistration(Vue, components);
-
     const StorePlugin = registerStoreModule(store, { schemas });
+    const HttpClientConfig = setHttpClient(httpClient.lib);
 
-    MantraPlugin.setConfig({ store: StorePlugin });
+    MantraPlugin.setConfig({ store: StorePlugin, httpClient: HttpClientConfig });
+    
 };
 
 export default install;
