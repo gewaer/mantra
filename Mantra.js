@@ -103,6 +103,7 @@ export const registerStoreModule = function(store, options) {
  *
  * @param {Vue} Vue - Contains the Vue Instance.
  * @param {object} options - Contains configuration for Mantra installation
+ * @returns {Error|Console|void}
  */
 export const install = function(Vue, options) {
     const { valid, reason } = isOptionsValid(options);
@@ -116,7 +117,7 @@ export const install = function(Vue, options) {
     try {
         componentsRegistration(Vue, components);
     } catch(er) {
-        error(er.message);
+        return error(er.message);
     }
 
     const StorePlugin = registerStoreModule(store, { schemas });
