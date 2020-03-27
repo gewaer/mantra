@@ -24,7 +24,7 @@ export default {
             pushToRouteParams(to, { config });
             next();
         } catch(err) {
-            error(err.message);
+            error(err);
             next('*');
         }
     },
@@ -35,7 +35,7 @@ export default {
             return createElement('404', context.data, children);
         }
         
-        return createElement(config.component.name, { ...context.data, props: { config } }, children);
+        return createElement(config.component.name, { ...context.data, props: { config, role: 'ROOT' } }, children);
     }
 };
 </script>
