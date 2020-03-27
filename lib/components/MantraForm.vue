@@ -19,7 +19,7 @@ export default {
     beforeRouteEnter(to, from, next) {
         const path = getPathFromObject(to);
 
-        try {            
+        try {
             const config = MantraForm._getConfig({ path });
             pushToRouteParams(to, { config });
             next();
