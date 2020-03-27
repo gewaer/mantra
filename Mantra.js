@@ -112,8 +112,7 @@ const registerStoreModule = function(store, options) {
 /**
  * Temporary handler to set some dynamic approach to handle custom HttpClient library.
  *
- * @param {String} lib - Name of the key at the vue.prototype to retrieve the HttpClient library.
- * @param {Vue} Vue - Vue instance to retrive the HttpClient from its prototype.
+ * @param {String} name - Name of the key at the vue.prototype to retrieve the HttpClient library.
  * @returns {HttpClientConfig} - Return the config to set at the httpClient.
  */
 const setHttpClient = function(name) {
