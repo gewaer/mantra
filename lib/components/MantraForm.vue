@@ -19,12 +19,12 @@ export default {
     beforeRouteEnter(to, from, next) {
         const path = getPathFromObject(to);
 
-        try {
+        try {            
             const config = MantraForm._getConfig({ path });
             pushToRouteParams(to, { config });
             next();
         } catch(err) {
-            error(err.message);
+            error(err);
             next('*');
         }
     },
@@ -35,7 +35,7 @@ export default {
             return createElement('404', context.data, children);
         }
         
-        return createElement(config.component.name, { ...context.data, props: { config } }, children);
+        return createElement(config.component.name, { ...context.data, props: { config, role: 'ROOT' } }, children);
     }
 };
 </script>
