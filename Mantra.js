@@ -86,6 +86,7 @@ export const registerStoreModule = function(store, options) {
 
     // Registering schema module
     lib.registerModule('schemas', {
+        namespaced: true,
         state: {
             ...schemas
         },
