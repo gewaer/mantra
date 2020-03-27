@@ -1,5 +1,6 @@
 import 'jest-extended';
-import Mantra, { isTruthy, isObject, isEmptyObject, isValidSchema, isValidStore, isOptionsValid, componentsRegistration } from '../../Mantra';
+import Mantra, { isTruthy, isObject, isEmptyObject, isValidSchema, isValidStore, isOptionsValid, componentsRegistration, registerStoreModule } from '../../Mantra';
+import Vuex, { Store } from 'vuex';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 
 describe('Mantra.js module', () => {
@@ -152,8 +153,11 @@ describe('Mantra.js module', () => {
 	});
 
 	describe('Vue installation', () => {
-		let localVue = null;
-		beforeEach(() => (localVue = createLocalVue()));
+		let localVue = createLocalVue();
+		
+		beforeEach(() => {
+			localVue = createLocalVue();
+		});
 
 		describe('componentsRegistration', () => {
 			it('should be a function', () => {
@@ -194,8 +198,37 @@ describe('Mantra.js module', () => {
 			});
 		});
 
-		describe('registerStoreModule', () => {
+		describe('registerStoreModule (Vuex Store)', () => {
+			let vuex = null;
+			let options = { 
+				schemas: { 
+					dummyValue: 'module has been setted' 
+				} 
+			};
+			localVue.use(Vuex);
 
+			beforeEach(() => {
+				vuex = new Vuex.Store({
+					state: {},
+					getters: {},
+					mutations: {},
+					actions: {}
+				});
+			});
+
+			it('should be a function', () => {
+				expect(registerStoreModule).toBeInstanceOf(Function);
+			});
+
+			it('should register the schemas module into store', () => {
+				const storePlugin = registerStoreModule({ lib: vuex, config: {} }, options);
+				expect(storePlugin.state).toMatchObject(options);
+			});
+
+			it('should register the schemas module into store if `config` is not passed', () => {
+				const storePlugin = registerStoreModule({ lib: vuex }, options);
+				expect(storePlugin.state).toMatchObject(options);
+			});
 		});
 
 		describe('install', () => {
