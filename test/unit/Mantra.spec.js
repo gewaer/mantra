@@ -1,3 +1,4 @@
+import 'jest-extended';
 import Mantra, { isTruthy, isObject, isEmptyObject, isValidSchema, isValidStore, isOptionsValid, componentsRegistration } from '../../Mantra';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 
@@ -13,20 +14,20 @@ describe('Mantra.js module', () => {
 		});
 
 		it('should return `true` for truthy values', () => {
-			expect(isTruthy('hola')).toBe(true);
-			expect(isTruthy(3)).toBe(true);
-			expect(isTruthy(true)).toBe(true);
-			expect(isTruthy({})).toBe(true);
-			expect(isTruthy([])).toBe(true);
-			expect(isTruthy(new Function())).toBe(true);
+			expect(isTruthy('hola')).toBeTrue();
+			expect(isTruthy(3)).toBeTrue();
+			expect(isTruthy(true)).toBeTrue();
+			expect(isTruthy({})).toBeTrue();
+			expect(isTruthy([])).toBeTrue();
+			expect(isTruthy(new Function())).toBeTrue();
 		});
 
 		it('should return `false` for falsy values', () => {
-			expect(isTruthy('')).toBe(false);
-			expect(isTruthy(false)).toBe(false);
-			expect(isTruthy(0)).toBe(false);
-			expect(isTruthy(null)).toBe(false);
-			expect(isTruthy(undefined)).toBe(false);
+			expect(isTruthy('')).toBeFalse();
+			expect(isTruthy(false)).toBeFalse();
+			expect(isTruthy(0)).toBeFalse();
+			expect(isTruthy(null)).toBeFalse();
+			expect(isTruthy(undefined)).toBeFalse();
 		});
 	});
 
@@ -37,19 +38,19 @@ describe('Mantra.js module', () => {
 		});
 
 		it('should return `true` for object values', () => {
-			expect(isObject({ pepe: 5, rodrigo: 6 })).toBe(true);
-			expect(isObject(new Object(null))).toBe(true);
+			expect(isObject({ pepe: 5, rodrigo: 6 })).toBeTrue();
+			expect(isObject(new Object(null))).toBeTrue();
 		});
 
 		it('should return `false` for non-object values', () => {
-			expect(isObject([])).toBe(false);
-			expect(isObject(2)).toBe(false);
-			expect(isObject('hola')).toBe(false);
-			expect(isObject(true)).toBe(false);
-			expect(isObject(new Function())).toBe(false);
-			expect(isObject(new Map())).toBe(false);
-			expect(isObject(new Set())).toBe(false);
-			expect(isObject(new Promise(() => true))).toBe(false);
+			expect(isObject([])).toBeFalse();
+			expect(isObject(2)).toBeFalse();
+			expect(isObject('hola')).toBeFalse();
+			expect(isObject(true)).toBeFalse();
+			expect(isObject(new Function())).toBeFalse();
+			expect(isObject(new Map())).toBeFalse();
+			expect(isObject(new Set())).toBeFalse();
+			expect(isObject(new Promise(() => true))).toBeFalse();
 		});
 	});
 
@@ -60,11 +61,11 @@ describe('Mantra.js module', () => {
 		});
 
 		it('should return `true` for an object with no properties', () => {
-			expect(isEmptyObject({})).toBe(true);
+			expect(isEmptyObject({})).toBeTrue();
 		});
 
 		it('should return `false` for an object with properties', () => {
-			expect(isEmptyObject({ pepe: 'hola' })).toBe(false);
+			expect(isEmptyObject({ pepe: 'hola' })).toBeFalse();
 		});
 	});
 
@@ -74,18 +75,18 @@ describe('Mantra.js module', () => {
 		});
 
 		it('should return `true` for object values', () => {
-			expect(isValidSchema({})).toBe(true);
-			expect(isValidSchema({ pepe: 'hola' })).toBe(true);
+			expect(isValidSchema({})).toBeTrue();
+			expect(isValidSchema({ pepe: 'hola' })).toBeTrue();
 		});
 
 		it('should return `false` for non-object values', () => {
-			expect(isValidSchema(null)).toBe(false);
-			expect(isValidSchema(undefined)).toBe(false);
-			expect(isValidSchema(false)).toBe(false);
-			expect(isValidSchema(55)).toBe(false);
-			expect(isValidSchema('hola')).toBe(false);
-			expect(isValidSchema([])).toBe(false);
-			expect(isValidSchema(new Function())).toBe(false);
+			expect(isValidSchema(null)).toBeFalse();
+			expect(isValidSchema(undefined)).toBeFalse();
+			expect(isValidSchema(false)).toBeFalse();
+			expect(isValidSchema(55)).toBeFalse();
+			expect(isValidSchema('hola')).toBeFalse();
+			expect(isValidSchema([])).toBeFalse();
+			expect(isValidSchema(new Function())).toBeFalse();
 		});
 	});
 
@@ -97,27 +98,27 @@ describe('Mantra.js module', () => {
 		it('should return `true` for a non-empty lib property of an object', () => {
 			const store = { lib: { pepe: true } };
 
-			expect(isValidStore(store)).toBe(true);
+			expect(isValidStore(store)).toBeTrue();
 		});
 
 		it('shoud return `false` for an empty lib property of an object', () => {
 			const store = { lib: {} };
-			expect(isValidStore(store)).toBe(false);
+			expect(isValidStore(store)).toBeFalse();
 		});
 
 		it('should return `false` for empty object values', () => {
 			const store = {};
-			expect(isValidStore(store)).toBe(false);
+			expect(isValidStore(store)).toBeFalse();
 		});
 
 		it('should return `false` for non-object values', () => {
-			expect(isValidStore(null)).toBe(false);
-			expect(isValidStore(undefined)).toBe(false);
-			expect(isValidStore(false)).toBe(false);
-			expect(isValidStore('hi')).toBe(false);
-			expect(isValidStore(55)).toBe(false);
-			expect(isValidStore([])).toBe(false);
-			expect(isValidStore(new Function())).toBe(false);
+			expect(isValidStore(null)).toBeFalse();
+			expect(isValidStore(undefined)).toBeFalse();
+			expect(isValidStore(false)).toBeFalse();
+			expect(isValidStore('hi')).toBeFalse();
+			expect(isValidStore(55)).toBeFalse();
+			expect(isValidStore([])).toBeFalse();
+			expect(isValidStore(new Function())).toBeFalse();
 		});
 	});
 
@@ -160,23 +161,21 @@ describe('Mantra.js module', () => {
 			});
 
 			it('should register components in the vue instance', () => {
-				const components = {
-					'test': {
-						template: ''
-					},
-					'dummy': {
-						template: ''
-					}
+				const test = {
+					template: '',
 				};
+				const dummy = {
+					templte: ''
+				}
 
-				componentsRegistration(localVue, components);
+				componentsRegistration(localVue, { test, dummy });
 				
 				const wrapper = shallowMount({
 					template: '<div><test/><dummy/></div>'
 				}, { localVue });
 
-				expect(wrapper.find({ name: 'test' }).exists()).toBe(true);
-				expect(wrapper.find({ name: 'dummy' }).exists()).toBe(true);
+				expect(wrapper.find({ name: 'test' }).exists()).toBeTrue();
+				expect(wrapper.find({ name: 'dummy' }).exists()).toBeTrue();
 			});
 
 			it('should throw exception when `components` is a falsy value', () => {
