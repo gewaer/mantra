@@ -1,5 +1,6 @@
 {
 	"*.+(js|ts)": [
-		"eslint"
+		"eslint --fix",
+		"git add"
 	]
 }
