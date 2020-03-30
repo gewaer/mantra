@@ -121,7 +121,7 @@ export const install = function(Vue, options) {
     }
 
     const StorePlugin = registerStoreModule(store, { schemas });
-
+    
     MantraPlugin.setConfig({ store: StorePlugin });
 };
 

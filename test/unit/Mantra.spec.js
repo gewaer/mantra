@@ -101,13 +101,13 @@ describe('Mantra.js module', () => {
 			expect(isValidStore).toBeInstanceOf(Function);
 		});
 
-		it('should return `true` for a non-empty lib property of an object', () => {
+		it('should return `true` for a non-empty lib property of a store object', () => {
 			const store = { lib: { pepe: true } };
 
 			expect(isValidStore(store)).toBeTrue();
 		});
 
-		it('shoud return `false` for an empty lib property of an object', () => {
+		it('shoud return `false` for an empty lib property of a store object', () => {
 			const store = { lib: {} };
 			expect(isValidStore(store)).toBeFalse();
 		});
@@ -130,8 +130,14 @@ describe('Mantra.js module', () => {
 
 	describe('isOptionsValid', () => {
 		const validOptions = {
-			config: { schemas: {} },
-			plugins: { store: { lib: { pepe: 'random-value' } } }
+			config: { 
+				schemas: {}
+			},
+			plugins: { 
+				store: { 
+					lib: { pepe: 'random-value' } 
+				} 
+			}
 		};
 
 		it('should be a function', () => {
@@ -139,7 +145,8 @@ describe('Mantra.js module', () => {
 		});
 
 		it('should return `valid: true` for a valid schema and a valid store', () => {
-			expect(isOptionsValid(validOptions)).toMatchObject({ valid: true });
+			const expectedResult = { valid: true };
+			expect(isOptionsValid(validOptions)).toMatchObject(expectedResult);
 		});
 
 		it('should return `valid: false` and a `reason` for an invalid schema', () => {
@@ -158,12 +165,12 @@ describe('Mantra.js module', () => {
 	});
 
 	describe('Vue installation', () => {
-		let localVue = createLocalVue();
+		let localVue = null;
 		let vuex = null;
-		localVue.use(Vuex);
 		
 		beforeEach(() => {
 			localVue = createLocalVue();
+			localVue.use(Vuex);
 			vuex = new Vuex.Store({
 				state: {},
 				getters: {},
@@ -182,8 +189,8 @@ describe('Mantra.js module', () => {
 					template: '',
 				};
 				const dummy = {
-					templte: ''
-				}
+					template: ''
+				};
 
 				componentsRegistration(localVue, { test, dummy });
 				
@@ -215,7 +222,7 @@ describe('Mantra.js module', () => {
 			let options = { 
 				schemas: { 
 					dummyValue: 'module has been setted' 
-				} 
+				}
 			};
 
 			it('should be a function', () => {
@@ -223,12 +230,14 @@ describe('Mantra.js module', () => {
 			});
 
 			it('should register the schemas module into store', () => {
-				const storePlugin = registerStoreModule({ lib: vuex, config: {} }, options);
+				const store = { lib: vuex, config: {} };
+				const storePlugin = registerStoreModule(store, options);
 				expect(storePlugin.state).toMatchObject(options);
 			});
 
-			it('should register the schemas module into store if `config` is not passed', () => {
-				const storePlugin = registerStoreModule({ lib: vuex }, options);
+			it('should register the schemas module into store if `store.config` is not passed', () => {
+				const store = { lib: vuex };
+				const storePlugin = registerStoreModule(store, options);
 				expect(storePlugin.state).toMatchObject(options);
 			});
 		});
@@ -237,9 +246,13 @@ describe('Mantra.js module', () => {
 			const spyConsoleError = jest.spyOn(console, 'error').mockImplementation((message) => (message));
 			let plugins = null;
 
+			// Plugins must be define in beforeEach hook because Vuex is in a beforeEach
 			beforeEach(() => {
 				plugins = { 
-					store: { lib: vuex, config: {} } 
+					store: { 
+						lib: vuex, 
+						config: {} 
+					}
 				};
 			});
 
