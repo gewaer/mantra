@@ -1,0 +1,5 @@
+{
+	"parser": "vue-eslint-parser",
+	"plugins": ["vue"],
+	"extends": ["plugin:vue/base", "plugin:vue/essential"]
+}

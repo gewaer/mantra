@@ -29,7 +29,7 @@ export default {
         }
     },
     render(createElement, context) {
-        const { props: { config }, parent, children, data } = context;
+        const { props: { config }, parent, children } = context;
 
         if (!config.component._isValidComponent(parent)) {
             return createElement('404', context.data, children);
