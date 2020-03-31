@@ -1,0 +1,6 @@
+# Want to modify this file?
+# Go to https://EditorConfig.org
+
+[*.{js,json}]
+indent_size = 4
+indent_style = space
