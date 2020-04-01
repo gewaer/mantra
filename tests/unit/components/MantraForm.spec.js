@@ -1,84 +1,125 @@
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import Mantra from '../../../index';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import * as Component from '../../../lib/components/MantraForm.vue';
-import { MantraForm } from '../../../lib/core/components';
-import { MantraSchema } from '../../../lib/core/schema';
-import { MantraInfo } from '../../../lib/core/state';
+import { mount } from '@vue/test-utils';
+import { installMantra, createDefaultTestingRouter } from '../../helpers/setup';
+import * as MantraFormComponent from '../../../lib/components/MantraForm.vue';
+import MantraForm from '../../../lib/core/components/MantraForm.js';
+import MantraSchema from '../../../lib/core/schema/MantraSchema.js';
+import MantraInfo from '../../../lib/core/state/MantraInfo.js';
 
-/* 
-    To-do for testing
-    1. Vuex install into localVue with a basic configuration [done]
-    2. Mantra install as a plugin in localVue (with valid configuration) [done]
-    3. VueRouter install as a plugin in localVue (with a route that matches Mantra schema) [done]
-*/
-
-describe('MantraForm.vue (Functional)', () => {
-    let wrapper = null;
-    const localVue = createLocalVue();
-    localVue.use(Vuex);
-    const store = new Vuex.Store({
-        state: {},
-        getters: {},
-        mutations: {},
-        actions: {}
-    });
-
-    const options = {
-        plugins: {
-            store: {
-                lib: store,
-                config: {}
-            }
-        },
-        config: {
-            components: {
-                pepe: {
-                    template: ''
+// START Mocking ES6 classes
+jest.mock('../../../lib/core/components/MantraForm', () => {
+    const _getConfig = jest.fn(() => {
+        return {
+            name: 'pepe',
+            path: 'pepe.5',
+            schema: 'pepe',
+            id: '5',
+            parents: [],
+            action: {
+                update: {
+                    name: 'pepe',
+                    fields: ['description', 'title'],
+                    _mixin: 'MantraForm'
                 }
             },
-            schemas: {
-                pepe: new MantraSchema({
+            context: '',
+            component: {
+                name: 'pepeComp'
+            },
+            endpoint: 'pepe.5',
+            alias: '',
+            _path: '',
+            baseClasses: {}
+        };
+    });
+    return jest.fn().mockImplementation(({ name, fields }) => {
+        return {
+            __esModule: true,
+            name,
+            fields,
+            _mixin: 'MantraForm',
+            _getConfig
+        };
+    });
+});
+jest.mock('../../../lib/core/schema/MantraSchema', () => {
+    return jest.fn().mockImplementation(({ name, fields, actions }) => {
+        return {
+            __esModule: true,
+            name,
+            fields,
+            actions
+        }
+    });
+});
+jest.mock('../../../lib/core/state/MantraInfo', () => {
+    return jest.fn().mockImplementation(() => {
+        return {
+            __esModule: true,
+            type: 'String',
+            config: null,
+            name: '',
+            default: '',
+            _dataType: null,
+            _root: 'info'
+        };
+    });
+});
+// END Mocking ES6 classes
+
+// Mantra mocked data
+const testingRoutes = [{ path: '/pepe/5', component: MantraFormComponent }];
+const testingConfig = {
+    components: {
+        pepeComp: {
+            template: ''
+        }
+    },
+    schemas: {
+        pepe: new MantraSchema({
+            name: 'pepe',
+            fields: {
+                description: new MantraInfo(),
+                title: new MantraInfo(),
+            },
+            actions: {
+                update: new MantraForm({
                     name: 'pepe',
-                    fields: {
-                        description: new MantraInfo({
-                            type: 'String',
-                        }),
-                        title: new MantraInfo({
-                            type: 'String',
-                        }),
-                    },
-                    actions: {
-                        update: new MantraForm({
-                            name: 'pepe',
-                            fields: ['description', 'title']
-                        })
-                    }
+                    fields: ['description', 'title']
                 })
             }
-        }
-    };
-    console.log("OPTIONS", options.config.schemas.pepe);
-    localVue.use(Mantra, options);
+        })
+    }
+};
+// Mantra mocked data
 
-    localVue.use(VueRouter);
-    const routes = [{ path: '/test/path', component: Component }];
-    const router = new VueRouter(routes);
+describe('MantraForm.vue (Functional)', () => {
+    let localVue = null;
+    let store = null;
+    let router = null;
 
     beforeEach(() => {
-        wrapper = shallowMount(Component, {
-            localVue,
-            router,
-            store
-        });
+        const { localVue: vue, localStore } = installMantra(testingConfig);
+        localVue = vue;
+        store = localStore;
+        router = createDefaultTestingRouter(localVue, testingRoutes);
     });
     
     afterEach(() => {
-        wrapper.destroy();
+        jest.resetModules();
     });
 
-    it('renders a child component based on valid route path', () => {});
+    it('renders a child component based on valid route path', () => {
+        const wrapper = mount(MantraFormComponent, {
+            localVue,
+            store,
+            router
+        });
 
-    it('renders the 404 page based on an invalid route path', () => {});
+        router.push('/pepe/5');
+
+        console.log("WRAPPER", wrapper);
+        expect(true).toBe(true);
+    });
+
+    // test: 'renders the 404 page based on an invalid route path'
 });

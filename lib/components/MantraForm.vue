@@ -17,6 +17,7 @@ const pushToRouteParams = function (route, payload) {
 export default {
     functional: true,
     beforeRouteEnter(to, from, next) {
+        console.log("BEFORE ENTER");
         const path = getPathFromObject(to);
 
         try {
@@ -29,6 +30,7 @@ export default {
         }
     },
     render(createElement, context) {
+        console.log("RENDER");
         const { props: { config }, parent, children } = context;
 
         if (!config.component._isValidComponent(parent)) {
