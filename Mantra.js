@@ -1,12 +1,6 @@
 import { MantraPlugin } from './lib/MantraPlugin';
 import { error } from './lib/utils';
-
-/*
-    These functions are meant to be used as utilities for the params validation
-*/
-export const isTruthy = (value) => (!!value);
-export const isObject = (value) => (value.constructor.name === 'Object');
-export const isEmptyObject = (obj) => (Object.keys(obj).length === 0);
+import { isTruthy, isObject, isEmptyObject } from './lib/utils';
 
 /**
  * This function is meant to check if the schemas parameter is an object value.
