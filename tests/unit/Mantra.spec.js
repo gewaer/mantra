@@ -1,21 +1,21 @@
 import 'jest-extended';
-import Vuex from 'vuex';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { MantraPlugin } from '../../lib/MantraPlugin';
+import { installMantra, createDefaultTestingStore } from '../helpers/setup';
 import Mantra, { componentsRegistration, install, isOptionsValid, isValidSchema, isValidStore, registerStoreModule } from '../../Mantra';
 
 describe('Mantra.js module', () => {
 	it('should export a function', () => {
-		expect(Mantra).toBeInstanceOf(Function);
+		expect(Mantra).toBeFunction();
 	});
 
 	it('should export a function call `install`', () => {
 		expect(Mantra.name).toEqual('install');
 	});
 
-	describe('isValidSchema', () => {
+	describe('isValidSchema()', () => {
 		it('should be a function', () => {
-			expect(isValidSchema).toBeInstanceOf(Function);
+			expect(isValidSchema).toBeFunction();
 		});
 
 		it('should return `true` for object values', () => {
@@ -34,9 +34,9 @@ describe('Mantra.js module', () => {
 		});
 	});
 
-	describe('isValidStore', () => {
+	describe('isValidStore()', () => {
 		it('should be a function', () => {
-			expect(isValidStore).toBeInstanceOf(Function);
+			expect(isValidStore).toBeFunction();
 		});
 
 		it('should return `true` for a non-empty lib property of a store object', () => {
@@ -66,7 +66,7 @@ describe('Mantra.js module', () => {
 		});
 	});
 
-	describe('isOptionsValid', () => {
+	describe('isOptionsValid()', () => {
 		const validOptions = {
 			config: { 
 				schemas: {}
@@ -79,7 +79,7 @@ describe('Mantra.js module', () => {
 		};
 
 		it('should be a function', () => {
-			expect(isOptionsValid).toBeInstanceOf(Function);
+			expect(isOptionsValid).toBeFunction();
 		});
 
 		it('should return `valid: true` for a valid schema and a valid store', () => {
@@ -103,23 +103,16 @@ describe('Mantra.js module', () => {
 	});
 
 	describe('Vue installation', () => {
-		let localVue = null;
-		let vuex = null;
+        let localVue = null;
 		
 		beforeEach(() => {
-			localVue = createLocalVue();
-			localVue.use(Vuex);
-			vuex = new Vuex.Store({
-				state: {},
-				getters: {},
-				mutations: {},
-				actions: {}
-			});
+            localVue = createLocalVue();
 		});
 
-		describe('componentsRegistration', () => {
+		describe('componentsRegistration()', () => {
+            const errorMsg = 'Mantra installation expects Vue components in its config parameter';
 			it('should be a function', () => {
-				expect(componentsRegistration).toBeInstanceOf(Function);
+				expect(componentsRegistration).toBeFunction();
 			});
 
 			it('should register components in the vue instance', () => {
@@ -141,131 +134,161 @@ describe('Mantra.js module', () => {
 			});
 
 			it('should throw exception when `components` is a falsy value', () => {
-				expect(() => (componentsRegistration(localVue, null))).toThrowError('Mantra installation expects Vue components in its config parameter');
-				expect(() => (componentsRegistration(localVue, undefined))).toThrowError('Mantra installation expects Vue components in its config parameter');
-				expect(() => (componentsRegistration(localVue, false))).toThrowError('Mantra installation expects Vue components in its config parameter');
-				expect(() => (componentsRegistration(localVue, 0))).toThrowError('Mantra installation expects Vue components in its config parameter');
-				expect(() => (componentsRegistration(localVue, ''))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, null))).toThrowError(errorMsg);
+				expect(() => (componentsRegistration(localVue, undefined))).toThrowError(errorMsg);
+				expect(() => (componentsRegistration(localVue, false))).toThrowError(errorMsg);
+				expect(() => (componentsRegistration(localVue, 0))).toThrowError(errorMsg);
+				expect(() => (componentsRegistration(localVue, ''))).toThrowError(errorMsg);
 			});
 
 			it('should throw exception when `components` is a non-object value', () => {
-				expect(() => (componentsRegistration(localVue, []))).toThrowError('Mantra installation expects Vue components in its config parameter');
-				expect(() => (componentsRegistration(localVue, new Function()))).toThrowError('Mantra installation expects Vue components in its config parameter');
-				expect(() => (componentsRegistration(localVue, new Map()))).toThrowError('Mantra installation expects Vue components in its config parameter');
-				expect(() => (componentsRegistration(localVue, new Set()))).toThrowError('Mantra installation expects Vue components in its config parameter');
+				expect(() => (componentsRegistration(localVue, []))).toThrowError(errorMsg);
+				expect(() => (componentsRegistration(localVue, new Function()))).toThrowError(errorMsg);
+				expect(() => (componentsRegistration(localVue, new Map()))).toThrowError(errorMsg);
+				expect(() => (componentsRegistration(localVue, new Set()))).toThrowError(errorMsg);
 			});
 		});
 
-		describe('registerStoreModule (Vuex Store)', () => {
+		describe('registerStoreModule() (Vuex Store)', () => {
+            let vuex = null;
 			let options = { 
 				schemas: { 
 					dummyValue: 'module has been setted' 
 				}
-			};
+            };
+            
+            beforeEach(() => {
+                vuex = createDefaultTestingStore(localVue);
+            })
 
 			it('should be a function', () => {
-				expect(registerStoreModule).toBeInstanceOf(Function);
+				expect(registerStoreModule).toBeFunction();
 			});
 
 			it('should register the schemas module into store', () => {
 				const store = { lib: vuex, config: {} };
-				const storePlugin = registerStoreModule(store, options);
+                const storePlugin = registerStoreModule(store, options);
+                
 				expect(storePlugin.state).toMatchObject(options);
 			});
 
 			it('should register the schemas module into store if `store.config` is not passed', () => {
 				const store = { lib: vuex };
-				const storePlugin = registerStoreModule(store, options);
+                const storePlugin = registerStoreModule(store, options);
+                
 				expect(storePlugin.state).toMatchObject(options);
 			});
 		});
 
-		describe('install', () => {
-			const spyConsoleError = jest.spyOn(console, 'error').mockImplementation((message) => (message));
-			let plugins = null;
+		describe('install()', () => {
+            const spyConsoleError = jest.spyOn(console, 'error').mockImplementation((message) => (message));
 
-			// Plugins must be define in beforeEach hook because Vuex is in a beforeEach
-			beforeEach(() => {
-				plugins = { 
-					store: { 
-						lib: vuex, 
-						config: {} 
-					}
-				};
-			});
-
+            beforeEach(() => {
+                spyConsoleError.mockReset();
+            });
+        
 			it('should be a function', () => {
-				expect(install).toBeInstanceOf(Function);
+				expect(install).toBeFunction();
 			});
 
 			it('should log a reason if `options.schemas` is not valid', () => {
-				install(localVue, { plugins, config: { components: {} } });
+                installMantra({ vue: localVue, config: { components: {} } });
+
 				expect(spyConsoleError).toBeCalled();
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Schemas property must be an object');
+				expect(spyConsoleError).toHaveBeenCalledWith('[mantra]: Schemas property must be an object');
 			});
 
-			it('should log a reason if `options.store` is not valid', () => {
-				install(localVue, { plugins: {}, config: { schemas: {}, components: {} } });
-				expect(spyConsoleError).toBeCalled();
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Store library must be provided');
+			it('should log a reason when `options.store` is not valid', () => {
+                installMantra({ vue: localVue, store: 'pepe la anguila', config: { schemas: {}, components: {} } });
+
+				expect(spyConsoleError).toHaveBeenCalled();
+				expect(spyConsoleError).toHaveBeenCalledWith('[mantra]: Store library must be provided');
 			});
 
-			it('should log an error if `config.components` is falsy', () => {
-				install(localVue, { plugins, config: { schemas: {}, components: null } });
-				expect(spyConsoleError).toBeCalledTimes(1);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-				
-				install(localVue, { plugins, config: { schemas: {}, component: undefined } });
-				expect(spyConsoleError).toBeCalledTimes(2);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
+            describe('Error log when `config.components` is falsy', () => {
+                const errorMsg = '[mantra]: Mantra installation expects Vue components in its config parameter';
 
-				install(localVue, { plugins, config: { schemas: {}, component: 0 } });
-				expect(spyConsoleError).toBeCalledTimes(3);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
+                test('Null', () => {
+                    installMantra({ vue: localVue, tetsingConfig: { schemas: {}, components: null } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('Undefined', () => {
+                    installMantra({ vue: localVue, config: { schemas: {}, component: undefined } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('Zero', () => {
+                    installMantra({ vue: localVue, config: { schemas: {}, component: 0 } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('False', () => {
+                    installMantra({ vue: localVue, config: { schemas: {}, component: false } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('String empty', () => {
+                    installMantra({ vue: localVue, config: { schemas: {}, component: '' } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+            });
+            
+            describe('Error log when `config.components` is not an object', () => {
+                const errorMsg = '[mantra]: Mantra installation expects Vue components in its config parameter';
+                const options = { config: { schemas: {} } };
 
-				install(localVue, { plugins, config: { schemas: {}, component: false } });
-				expect(spyConsoleError).toBeCalledTimes(4);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
+                test('Array', () => {
+                    installMantra({ vue: localVue, config: { ...options.config, component: [] } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
 
-				install(localVue, { plugins, config: { schemas: {}, component: '' } });
-				expect(spyConsoleError).toBeCalledTimes(5);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-			});
-
-			it('should log an error if `config.components` is not an object', () => {
-				const options = { plugins, config: { schemas: {} } };
-
-				install(localVue, { ...options, config: { ...options.config, component: [] } });
-				expect(spyConsoleError).toBeCalledTimes(1);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-				
-				install(localVue, { ...options, config: { ...options.config, component: 'hola' } });
-				expect(spyConsoleError).toBeCalledTimes(2);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-
-				install(localVue, { ...options, config: { ...options.config, component: 55 } });
-				expect(spyConsoleError).toBeCalledTimes(3);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-
-				install(localVue, { ...options, config: { ...options.config, component: new Function() } });
-				expect(spyConsoleError).toBeCalledTimes(4);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-
-				install(localVue, { ...options, config: { ...options.config, component: new Map() } });
-				expect(spyConsoleError).toBeCalledTimes(5);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-
-				install(localVue, { ...options, config: { ...options.config, component: new Set() } });
-				expect(spyConsoleError).toBeCalledTimes(6);
-				expect(spyConsoleError).toBeCalledWith('[mantra]: Mantra installation expects Vue components in its config parameter');
-			});
+                test('String', () => {
+                    installMantra({ vue: localVue, config: { ...options.config, component: 'hola' } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('Number', () => {
+                    installMantra({ vue: localVue, config: { ...options.config, component: 55 } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('Function', () => {
+                    installMantra({ vue: localVue, config: { ...options.config, component: new Function() } });
+                    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('Map', () => {
+                    installMantra({ vue: localVue, config: { ...options.config, component: new Map() } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+                test('Set', () => {
+                    installMantra({ vue: localVue, config: { ...options.config, component: new Set() } });
+    
+                    expect(spyConsoleError).toHaveBeenCalled();
+                    expect(spyConsoleError).toHaveBeenCalledWith(errorMsg);
+                });
+            })
 
 			it('should register the `store` into MantraPlugin', () => {
 				const spySetConfig = jest.spyOn(MantraPlugin, 'setConfig').mockImplementation((value) =>  (value));
-
-				install(localVue, { plugins, config: { schemas: {}, components: {} } });
-				expect(spySetConfig).toBeCalled();
-				expect(spySetConfig).toBeCalledWith({ store: vuex });
+                const { localStore } = installMantra({ vue: localVue, config: { schemas: {}, components: {} } });
+                
+				expect(spySetConfig).toHaveBeenCalled();
+				expect(spySetConfig).toHaveBeenCalledWith({ store: localStore });
 			});
 
 			afterEach(() => {
