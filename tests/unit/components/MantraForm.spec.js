@@ -1,125 +1,205 @@
-import { mount } from '@vue/test-utils';
-import { installMantra, createDefaultTestingRouter } from '../../helpers/setup';
-import * as MantraFormComponent from '../../../lib/components/MantraForm.vue';
-import MantraForm from '../../../lib/core/components/MantraForm.js';
-import MantraSchema from '../../../lib/core/schema/MantraSchema.js';
-import MantraInfo from '../../../lib/core/state/MantraInfo.js';
+import 'jest-extended';
+import { shallowMount } from '@vue/test-utils';
+import { installMantra } from '../../helpers/setup';
+import MantraFormComponent from '../../../lib/components/MantraForm/index.vue';
+import MantraForm from '../../../lib/core/components/MantraForm';
+import { getPathFromObject, pushToRouteParams } from '../../../lib/components/MantraForm/utils';
 
-// START Mocking ES6 classes
-jest.mock('../../../lib/core/components/MantraForm', () => {
-    const _getConfig = jest.fn(() => {
-        return {
-            name: 'pepe',
-            path: 'pepe.5',
-            schema: 'pepe',
-            id: '5',
-            parents: [],
-            action: {
-                update: {
-                    name: 'pepe',
-                    fields: ['description', 'title'],
-                    _mixin: 'MantraForm'
-                }
-            },
-            context: '',
-            component: {
-                name: 'pepeComp'
-            },
-            endpoint: 'pepe.5',
-            alias: '',
-            _path: '',
-            baseClasses: {}
-        };
-    });
-    return jest.fn().mockImplementation(({ name, fields }) => {
-        return {
-            __esModule: true,
-            name,
-            fields,
-            _mixin: 'MantraForm',
-            _getConfig
-        };
-    });
-});
-jest.mock('../../../lib/core/schema/MantraSchema', () => {
-    return jest.fn().mockImplementation(({ name, fields, actions }) => {
-        return {
-            __esModule: true,
-            name,
-            fields,
-            actions
-        }
-    });
-});
-jest.mock('../../../lib/core/state/MantraInfo', () => {
-    return jest.fn().mockImplementation(() => {
-        return {
-            __esModule: true,
-            type: 'String',
-            config: null,
-            name: '',
-            default: '',
-            _dataType: null,
-            _root: 'info'
-        };
-    });
-});
-// END Mocking ES6 classes
-
-// Mantra mocked data
-const testingRoutes = [{ path: '/pepe/5', component: MantraFormComponent }];
-const testingConfig = {
-    components: {
-        pepeComp: {
-            template: ''
-        }
-    },
-    schemas: {
-        pepe: new MantraSchema({
-            name: 'pepe',
-            fields: {
-                description: new MantraInfo(),
-                title: new MantraInfo(),
-            },
-            actions: {
-                update: new MantraForm({
-                    name: 'pepe',
-                    fields: ['description', 'title']
-                })
-            }
-        })
-    }
+const mockMantraData = {
+    name: 'pepe',
+    path: 'pepe.5',
+    schema: 'pepe',
+    id: '5',
+    parents: [],
+    component: null,
+    action: '',
+    context: '',
+    endpoint: '',
+    _path: ''
 };
-// Mantra mocked data
+const MantraDataProperties = Object.keys(mockMantraData);
 
-describe('MantraForm.vue (Functional)', () => {
-    let localVue = null;
-    let store = null;
-    let router = null;
+function renderShallowComponent(options = null) {
+    const mockOptions = options || {
+        propsData: {
+            config: {
+                component: {
+                    name: 'testingPepe',
+                    _isValidComponent: () => (true)
+                }
+            }
+        },
+        stubs: {
+            testingPepe: true
+        }
+    };
+    const testingConfig = {
+        components: {
+            testingPepe: {
+                props: ['config'],
+                template: '<div>Pepe component</div>'
+            },
+            notFound: {
+                template: '<div>404 not found</div>'
+            }
+        },
+        schemas: {}
+    };
+    const { localVue } = installMantra({ config: testingConfig });
+    const wrapper = shallowMount(MantraFormComponent, { localVue, ...mockOptions });
 
-    beforeEach(() => {
-        const { localVue: vue, localStore } = installMantra(testingConfig);
-        localVue = vue;
-        store = localStore;
-        router = createDefaultTestingRouter(localVue, testingRoutes);
+    return {
+        wrapper,
+        localVue
+    };
+};
+
+const executeBeforeRouteEnter = function(wrapper, next = null, to = null) {
+    const mockNext = next || jest.fn((to) => (to));
+    const mockTo = to || {
+        params: { 
+            schema: 'pepe', 
+            id: '5'
+        } 
+    };
+
+    MantraFormComponent.beforeRouteEnter.call(wrapper.vm, mockTo, undefined, mockNext);
+
+    return {
+        to: mockTo,
+        next: mockNext
+    };
+};
+
+describe('MantraForm (Vue)', () => {
+    describe('Utilities', () => {
+        describe('getPathFromObject', () => {
+            it('should be a function', () => {
+                expect(getPathFromObject).toBeFunction();
+            });
+
+            it('should return a string concat by dots when pass an `object` with props', () => {
+                const testInput = { name: 'pepe', id: 5, age: 12 };
+                const expectedValue = 'pepe.5.12';
+    
+                expect(getPathFromObject(testInput)).toBe(expectedValue);
+            });
+    
+            it('should return an error when pass an `undefined` value', () => {
+                const testInput = undefined;
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+    
+            it('should return an error when pass a `null` value', () => {
+                const testInput = null;
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+    
+            it('should return an error when pass a `number` value', () => {
+                const testInput = 12;
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+    
+            it('should return an error when pass a `Function` value', () => {
+                const testInput = new Function();
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+    
+            it('should return an error when pass a `Map` value', () => {
+                const testInput = new Map();
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+    
+            it('should return an error when pass a `Set` value', () => {
+                const testInput = new Set();
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+    
+            it('should return an error when pass a `boolean` value', () => {
+                let testInput = new Boolean();
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+    
+                testInput = new Boolean(1);
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+    
+            it('should return an error when pass a `string` value', () => {
+                const testInput = 'hola';
+                expect(() => (getPathFromObject(testInput))).toThrowError();
+            });
+        });
+    
+        describe('pushToParams', () => {
+            it('should be a function', () => {
+                expect(pushToRouteParams).toBeFunction();
+            });
+        });
     });
     
-    afterEach(() => {
-        jest.resetModules();
-    });
-
-    it('renders a child component based on valid route path', () => {
-        const wrapper = mount(MantraFormComponent, {
-            localVue,
-            store,
-            router
+    describe('Functional component (render)', () => {
+        afterEach(() => {
+            jest.resetModules();
         });
 
-        router.push('/pepe/5');
+        describe('beforeRouteEnter (Route Guard)', () => {
+            const spyConsoleError = jest.spyOn(console, 'error').mockImplementation((val) => (val));
+            const spyGetConfig = jest.spyOn(MantraForm, '_getConfig');
 
-        console.log("WRAPPER", wrapper);
-        expect(true).toBe(true);
+            beforeEach(() => {
+                spyConsoleError.mockClear();
+                spyGetConfig.mockReset();
+            });
+
+            it('should redirect to `*` when an error is catched', async () => {
+                spyGetConfig.mockImplementation(() => { throw new Error(); });
+
+                const { wrapper } = renderShallowComponent();
+                const { next } = executeBeforeRouteEnter(wrapper);
+                await wrapper.vm.$nextTick();
+
+                expect(next).toHaveBeenCalled();
+                expect(next).toHaveBeenCalledWith('*');
+            });
+
+            it('should redirect to `render` method with `config` in the route params', async () => {
+                spyGetConfig.mockReturnValue(mockMantraData);
+
+                const { wrapper } = renderShallowComponent();
+                const { to } = executeBeforeRouteEnter(wrapper);
+                await wrapper.vm.$nextTick();
+
+                expect(to.params).toContainKey('config');
+                expect(to.params.config).toContainAllKeys(MantraDataProperties);
+            });
+        });
+
+        it('should render a component when a valid `component` is pass through `context.props`', () => {
+            const { wrapper } = renderShallowComponent();
+            expect(wrapper.find({ name: 'testingPepe' }).exists()).toBeTrue();
+        });
+
+        it('should render a component with a `config` object prop when a valid `component` is pass through `context.props`', () => {
+            const { wrapper } = renderShallowComponent();
+            expect(wrapper.find({ name: 'testingPepe' }).props()).toContainKey('config');
+            expect(wrapper.find({ name: 'testingPepe' }).props().config).toBeObject();
+        });
+
+        it('should render the 404 component when a invalid `component` is pass through `context.props`', () => {
+            const { wrapper } = renderShallowComponent({
+                propsData: {
+                    config: {
+                        component: {
+                            name: 'testingPepe',
+                            _isValidComponent: () => (false)
+                        }
+                    }
+                },
+                stubs: {
+                    notFound: true
+                }
+            });
+            
+            expect(wrapper.find({ name: 'notFound' }).exists()).toBeTrue();
+        });
     });
-
-    // test: 'renders the 404 page based on an invalid route path'
 });
