@@ -1,12 +1,6 @@
-import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 import { createLocalVue } from '@vue/test-utils';
 import Mantra from '../../index';
-
-const createDefaultTestingRouter = function (Vue, testRoutes) {
-    Vue.use(VueRouter);
-    return new VueRouter(testRoutes);
-};
 
 const createDefaultTestingStore = function (Vue) {
     Vue.use(Vuex);
@@ -38,4 +32,4 @@ const installMantra = function(testingConfig) {
     };
 };
 
-export { createDefaultTestingStore, createDefaultTestingRouter, installMantra };
+export { createDefaultTestingStore, installMantra };
