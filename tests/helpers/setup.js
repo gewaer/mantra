@@ -13,22 +13,22 @@ const createDefaultTestingStore = function (Vue) {
     });
 };
 
-const installMantra = function(testingConfig) {
-    const localVue = createLocalVue();
-    const store = createDefaultTestingStore(localVue);
+const installMantra = function({ vue = null, config, store }) {
+    const localVue = vue || createLocalVue();
+    const testStore = store || createDefaultTestingStore(localVue);
     const testingOptions = {
         plugins: {
             store: {
-                lib: store,
+                lib: testStore,
                 config: {}
             }
         },
-        config: { ...testingConfig }
+        config: { ...config }
     };
     localVue.use(Mantra, testingOptions);
     return {
         localVue,
-        localStore: store
+        localStore: testStore
     };
 };
 
