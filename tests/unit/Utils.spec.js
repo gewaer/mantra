@@ -1,9 +1,10 @@
+import 'jest-extended';
 import { error, isTruthy, isObject, isEmptyObject } from '../../lib/utils';
 
 describe('Utilities (Mantra)', () => {
     describe('error', () => {
         it('should be a function', () => {
-            expect(error).toBeInstanceOf(Function);
+            expect(error).toBeFunction();
         });
 
         it('should return a message with `[mantra]: ` prefixed', () => {
@@ -18,7 +19,7 @@ describe('Utilities (Mantra)', () => {
     describe('isTruthy', () => {
 
         it('should be a function', () => {
-            expect(isTruthy).toBeInstanceOf(Function);
+            expect(isTruthy).toBeFunction();
         });
     
         it('should return `true` for truthy values', () => {
@@ -42,7 +43,7 @@ describe('Utilities (Mantra)', () => {
     describe('isObject', () => {
     
         it('should be a function', () => {
-            expect(isObject).toBeInstanceOf(Function);
+            expect(isObject).toBeFunction();
         });
     
         it('should return `true` for object values', () => {
@@ -65,7 +66,7 @@ describe('Utilities (Mantra)', () => {
     describe('isEmptyObject', () => {
     
         it('should be a function', () => {
-            expect(isEmptyObject).toBeInstanceOf(Function);
+            expect(isEmptyObject).toBeFunction();
         });
     
         it('should return `true` for an object with no properties', () => {
