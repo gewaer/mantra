@@ -1,4 +1,4 @@
-![Node Continuous Integration](https://github.com/Gewaer/mantra/workflows/Node%20Continuous%20Integration/badge.svg)
+[![Node Continuous Integration](https://github.com/Gewaer/mantra/workflows/Node%20Continuous%20Integration/badge.svg)](https://github.com/Gewaer/mantra/actions?query=workflow%3A%22Node+Continuous+Integration%22)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Gewaer/mantra/blob/master/LICENSE)
 
 # Mantra
