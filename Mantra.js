@@ -8,9 +8,9 @@ import { isTruthy, isObject, isEmptyObject } from './lib/utils';
  * @param {object} schemas - Contains the schemas configuration.
  * @return {boolean} True if the schemas parameter is an object value.
  */
-export const isValidSchema = function(schemas) {
-    const IS_DEFINED = isTruthy(schemas);
-    return IS_DEFINED && isObject(schemas);
+export const isValidSchema = function (schemas) {
+  const IS_DEFINED = isTruthy(schemas);
+  return IS_DEFINED && isObject(schemas);
 };
 
 /**
@@ -19,9 +19,9 @@ export const isValidSchema = function(schemas) {
  * @param {object} store - Contains the store library and configuration.
  * @returns {boolean} - True if the store is valid.
  */
-export const isValidStore = function(store) {
-    const IS_DEFINED = isTruthy(store);
-    return IS_DEFINED && isObject(store) && !isEmptyObject(store) && isObject(store.lib) && !isEmptyObject(store.lib);
+export const isValidStore = function (store) {
+  const IS_DEFINED = isTruthy(store);
+  return IS_DEFINED && isObject(store) && !isEmptyObject(store) && isObject(store.lib) && !isEmptyObject(store.lib);
 };
 
 /**
@@ -30,21 +30,21 @@ export const isValidStore = function(store) {
  * @param {object} params - Contains the vue install configuration.
  * @returns {object} Contains a boolean `valid` prop thats true if options is valid and a `reason` prop in case its not valid
  */
-export const isOptionsValid = function(params) {
-    const {
-        config: { schemas = null },
-        plugins: { store = null }
-    } = params;
+export const isOptionsValid = function (params) {
+  const {
+    config: { schemas = null },
+    plugins: { store = null }
+  } = params;
 
-    if (!isValidSchema(schemas)) {
-        return { valid: false, reason: 'Schemas property must be an object' };
-    }
+  if (!isValidSchema(schemas)) {
+    return { valid: false, reason: 'Schemas property must be an object' };
+  }
 
-    if (!isValidStore(store)) {
-        return { valid: false, reason: 'Store library must be provided' };
-    }
+  if (!isValidStore(store)) {
+    return { valid: false, reason: 'Store library must be provided' };
+  }
 
-    return { valid: true };
+  return { valid: true };
 };
 
 /**
@@ -54,16 +54,16 @@ export const isOptionsValid = function(params) {
  * @param {object} components - Contains an object of vue components.
  * @returns {Error|void} If the components param is falsy or not object then an exception is thrown
  */
-export const componentsRegistration = function(Vue, components) {
-    if (!isTruthy(components) || !isObject(components)) {
-        throw new Error('Mantra installation expects Vue components in its config parameter');
-    }
+export const componentsRegistration = function (Vue, components) {
+  if (!isTruthy(components) || !isObject(components)) {
+    throw new Error('Mantra installation expects Vue components in its config parameter');
+  }
 
-    const componentNames = Object.keys(components);
-    for (let name of componentNames) {
-        const component = components[name];
-        Vue.component(name, component);
-    };
+  const componentNames = Object.keys(components);
+  for (let name of componentNames) {
+    const component = components[name];
+    Vue.component(name, component);
+  };
 };
 
 
@@ -74,22 +74,22 @@ export const componentsRegistration = function(Vue, components) {
  * @param {object} options - Contains data that's used by the store modules.
  * @returns {object} - Returns the modified store plugin.
  */
-export const registerStoreModule = function(store, options) {
-    const { lib } = store;
-    const { schemas } = options;
+export const registerStoreModule = function (store, options) {
+  const { lib } = store;
+  const { schemas } = options;
 
-    // Registering schema module
-    lib.registerModule('schemas', {
-        namespaced: true,
-        state: {
-            ...schemas
-        },
-        getters: {},
-        mutations: {},
-        actions: {}
-    });
+  // Registering schema module
+  lib.registerModule('schemas', {
+    namespaced: true,
+    state: {
+      ...schemas
+    },
+    getters: {},
+    mutations: {},
+    actions: {}
+  });
 
-    return lib;
+  return lib;
 };
 
 /**
@@ -99,24 +99,24 @@ export const registerStoreModule = function(store, options) {
  * @param {object} options - Contains configuration for Mantra installation
  * @returns {Error|Console|void}
  */
-export const install = function(Vue, options) {
-    const { valid, reason } = isOptionsValid(options);
-    if(!valid) return error(reason);
+export const install = function (Vue, options) {
+  const { valid, reason } = isOptionsValid(options);
+  if (!valid) return error(reason);
 
-    const {
-        config: { schemas, components },
-        plugins: { store }
-    } = options;
+  const {
+    config: { schemas, components },
+    plugins: { store }
+  } = options;
 
-    try {
-        componentsRegistration(Vue, components);
-    } catch(er) {
-        return error(er.message);
-    }
+  try {
+    componentsRegistration(Vue, components);
+  } catch (er) {
+    return error(er.message);
+  }
 
-    const StorePlugin = registerStoreModule(store, { schemas });
-    
-    MantraPlugin.setConfig({ store: StorePlugin });
+  const StorePlugin = registerStoreModule(store, { schemas });
+
+  MantraPlugin.setConfig({ store: StorePlugin });
 };
 
 export default install;
