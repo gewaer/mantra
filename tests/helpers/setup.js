@@ -13,22 +13,27 @@ const createDefaultTestingStore = function (Vue) {
     });
 };
 
+const createDefaultStoreConfig = function({ localVue, config = {} }) {
+    const defaultStore = createDefaultTestingStore(localVue)
+    return {
+        lib: defaultStore,
+        config,
+    }
+};
+
 const installMantra = function({ vue = null, config, store }) {
     const localVue = vue || createLocalVue();
-    const testStore = store || createDefaultTestingStore(localVue);
+    const localStore = store || createDefaultStoreConfig({ localVue });
     const testingOptions = {
         plugins: {
-            store: {
-                lib: testStore,
-                config: {}
-            }
+            store: localStore
         },
         config: { ...config }
     };
     localVue.use(Mantra, testingOptions);
     return {
         localVue,
-        localStore: testStore
+        localStore
     };
 };
 
