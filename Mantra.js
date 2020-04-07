@@ -21,7 +21,7 @@ export const isValidSchema = function(schemas) {
  */
 export const isValidStore = function(store) {
     const IS_DEFINED = isTruthy(store);
-    return IS_DEFINED && !isEmptyObject(store) && !isEmptyObject(store.lib);
+    return IS_DEFINED && isObject(store) && !isEmptyObject(store) && isObject(store.lib) && !isEmptyObject(store.lib);
 };
 
 /**
