@@ -76,27 +76,5 @@ describe('Utilities (Mantra)', () => {
         it('should return `false` for an object with properties', () => {
             expect(isEmptyObject({ pepe: 'hola' })).toBeFalse();
         });
-
-        describe('Should return false for non-object values', () => {
-            test('Array', () => {
-                expect(isEmptyObject([])).toBeFalse();
-            });
-
-            test('String', () => {
-                expect(isEmptyObject('hola')).toBeFalse();
-            });
-            test('Number', () => {
-                expect(isEmptyObject(55)).toBeFalse();
-            });
-            test('Function', () => {
-                expect(isEmptyObject(new Function())).toBeFalse();
-            });
-            test('Map', () => {
-                expect(isEmptyObject(new Map())).toBeFalse();
-            });
-            test('Set', () => {
-                expect(isEmptyObject(new Set())).toBeFalse();
-            });
-        });
     });
 });
