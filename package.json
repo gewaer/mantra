@@ -60,5 +60,14 @@
   },
   "peerDependencies": {
     "vue": "^2.6.11"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm test"
+    }
+  },
+  "lint-staged": {
+    "*.{js,vue}": "eslint --cache --fix"
   }
 }
