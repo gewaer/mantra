@@ -1,3 +1,6 @@
+[![Node Continuous Integration](https://github.com/Gewaer/mantra/workflows/Node%20Continuous%20Integration/badge.svg)](https://github.com/Gewaer/mantra/actions?query=workflow%3A%22Node+Continuous+Integration%22) 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Gewaer/mantra/blob/master/LICENSE)
+
 # Mantra
 
 Mantra is a model-based tool to automate common frontend tasks such as components organization, data management and API communication in a single-page application.
